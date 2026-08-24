@@ -1,0 +1,71 @@
+
+DROP TABLE IF EXISTS attempts CASCADE;
+DROP TABLE IF EXISTS choices CASCADE;
+DROP TABLE IF EXISTS questions CASCADE;
+DROP TABLE IF EXISTS exams CASCADE;
+DROP TABLE IF EXISTS courses CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
+DROP TYPE IF EXISTS user_role CASCADE;
+
+CREATE TYPE user_role AS ENUM ('ADMIN', 'STUDENT');
+
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(150) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    role user_role NOT NULL DEFAULT 'STUDENT',
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE courses (
+    id SERIAL PRIMARY KEY,
+    code VARCHAR(20) UNIQUE NOT NULL, 
+    name VARCHAR(150) NOT NULL,
+    description TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE exams (
+    id SERIAL PRIMARY KEY,
+    course_id INT NOT NULL REFERENCES courses(id) ON DELETE RESTRICT,
+    title VARCHAR(150) NOT NULL,
+    description TEXT,
+    start_date TIMESTAMP WITH TIME ZONE NOT NULL,
+    end_date TIMESTAMP WITH TIME ZONE NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT check_exam_dates CHECK (end_date > start_date)
+);
+
+CREATE TABLE questions (
+    id SERIAL PRIMARY KEY,
+    exam_id INT NOT NULL REFERENCES exams(id) ON DELETE CASCADE,
+    statement TEXT NOT NULL,
+    points INT NOT NULL DEFAULT 1 CHECK (points > 0),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE choices (
+    id SERIAL PRIMARY KEY,
+    question_id INT NOT NULL REFERENCES questions(id) ON DELETE CASCADE,
+    text TEXT NOT NULL,
+    is_correct BOOLEAN NOT NULL DEFAULT FALSE
+);
+CREATE TABLE attempts (
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    exam_id INT NOT NULL REFERENCES exams(id) ON DELETE RESTRICT,
+    score INT NOT NULL DEFAULT 0,
+    submitted_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+   
+    CONSTRAINT unique_user_exam_attempt UNIQUE (user_id, exam_id)
+);
+
+CREATE TABLE answers (
+    id SERIAL PRIMARY KEY,
+    attempt_id INT NOT NULL REFERENCES attempts(id) ON DELETE CASCADE,
+    question_id INT NOT NULL REFERENCES questions(id) ON DELETE CASCADE,
+    choice_id INT REFERENCES choices(id) ON DELETE SET NULL, -- NULL si question non répondue (RG-05)
+    CONSTRAINT unique_attempt_question UNIQUE (attempt_id, question_id)
+);
