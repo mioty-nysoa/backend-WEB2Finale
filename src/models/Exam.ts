@@ -1,6 +1,6 @@
 export interface Exam {
-  id: number;
-  course_id: number;
+  id: string;
+  course_id: string;
   title: string;
   description: string;
   start_date: Date;
@@ -9,7 +9,7 @@ export interface Exam {
 }
 
 export interface CreateExamDTO {
-  course_id: number;
+  course_id: string;
   title: string;
   description: string;
   start_date: string;

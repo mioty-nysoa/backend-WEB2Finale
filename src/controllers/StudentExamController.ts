@@ -8,7 +8,7 @@ export const studentExamRouter = Router();
 
 // Hypothèse : un middleware d'authentification place l'utilisateur connecté sur request.user.id
 // (ex: middleware JWT en amont de ces routes). Adapte getUserId si ton middleware nomme la propriété autrement.
-function getUserId(request: any): number {
+function getUserId(request: any): string {
   return request.user.id;
 }
 
@@ -24,7 +24,7 @@ studentExamRouter.get('/my/exams/available', async (_request, response) => {
 
 studentExamRouter.get('/my/exams/:id', async (request, response) => {
   try {
-    const examId = Number(request.params.id);
+    const examId = request.params.id;
     const questions = await QuestionRepository.findQuestionsForStudent(examId);
     response.status(200).json(questions);
   } catch (error) {
@@ -35,7 +35,7 @@ studentExamRouter.get('/my/exams/:id', async (request, response) => {
 
 studentExamRouter.post('/my/exams/:id/submit', async (request, response) => {
   try {
-    const examId = Number(request.params.id);
+    const examId = request.params.id;
     const userId = getUserId(request);
     const score = await CorrectionService.correctExam(userId, examId, request.body);
     response.status(200).json({ score });

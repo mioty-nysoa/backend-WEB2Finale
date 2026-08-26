@@ -2,7 +2,7 @@ import { pool } from '../config/db.js';
 import type { Question } from '../models/Question.js';
 import type { Choice } from '../models/Choice.js';
 
-export async function createQuestion(examId: number, statement: string, points: number): Promise<Question> {
+export async function createQuestion(examId: string, statement: string, points: number): Promise<Question> {
   const result = await pool.query<Question>(
     'INSERT INTO questions (exam_id, statement, points) VALUES ($1, $2, $3) RETURNING *',
     [examId, statement, points]
@@ -16,15 +16,15 @@ export async function createQuestion(examId: number, statement: string, points: 
 }
 
 export async function createChoices(
-  questionId: number,
+  questionId: string,
   choices: Omit<Choice, 'id' | 'question_id'>[]
 ): Promise<Choice[]> {
   const created: Choice[] = [];
 
   for (const choice of choices) {
     const result = await pool.query<Choice>(
-      'INSERT INTO choices (question_id, text, is_correct) VALUES ($1, $2, $3) RETURNING *',
-      [questionId, choice.text, choice.is_correct ?? false]
+      'INSERT INTO choices (question_id, label, is_correct) VALUES ($1, $2, $3) RETURNING *',
+      [questionId, choice.label, choice.is_correct ?? false]
     );
     const row = result.rows[0];
     if (!row) {
@@ -37,14 +37,14 @@ export async function createChoices(
 }
 
 
-export async function findQuestionsForStudent(examId: number): Promise<Question[]> {
+export async function findQuestionsForStudent(examId: string): Promise<Question[]> {
   const questionsResult = await pool.query<Question>(
     'SELECT id, exam_id, statement, points FROM questions WHERE exam_id = $1',
     [examId]
   );
 
-  const choicesResult = await pool.query<Pick<Choice, 'id' | 'question_id' | 'text'>>(
-    `SELECT c.id, c.question_id, c.text
+  const choicesResult = await pool.query<Pick<Choice, 'id' | 'question_id' | 'label'>>(
+    `SELECT c.id, c.question_id, c.label
      FROM choices c
      JOIN questions q ON q.id = c.question_id
      WHERE q.exam_id = $1`,
@@ -58,7 +58,7 @@ export async function findQuestionsForStudent(examId: number): Promise<Question[
 }
 
 
-export async function findQuestionsWithAnswers(examId: number): Promise<Question[]> {
+export async function findQuestionsWithAnswers(examId: string): Promise<Question[]> {
   const questionsResult = await pool.query<Question>(
     'SELECT id, exam_id, statement, points FROM questions WHERE exam_id = $1',
     [examId]

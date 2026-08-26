@@ -1,14 +1,14 @@
 export interface Attempt {
-  id: number;
-  user_id: number;
-  exam_id: number;
+  id: string;
+  student_id: string;
+  exam_id: string;
   score: number;
   submitted_at: Date;
 }
 
 export interface StudentAnswerDTO {
-  question_id: number;
-  choice_id: number | null; // null si non répondu (RG-05)
+  question_id: string;
+  choice_id: string | null;
 }
 
 export interface SubmitExamDTO {

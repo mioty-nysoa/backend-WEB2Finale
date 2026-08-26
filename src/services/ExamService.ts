@@ -40,7 +40,7 @@ function validateChoices(choices: Omit<Choice, 'id' | 'question_id'>[]): void {
 }
 
 export async function addQuestionToExam(
-  examId: number,
+  examId: string,
   statement: string,
   points: number,
   choices: Omit<Choice, 'id' | 'question_id'>[]

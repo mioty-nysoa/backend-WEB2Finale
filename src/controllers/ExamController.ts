@@ -20,7 +20,7 @@ examRouter.post('/admin/exams', async (request, response) => {
 
 examRouter.post('/admin/exams/:id/questions', async (request, response) => {
   try {
-    const examId = Number(request.params.id);
+    const examId = request.params.id;
     const { statement, points, choices } = request.body;
     const question = await ExamService.addQuestionToExam(examId, statement, points, choices);
     response.status(201).json(question);

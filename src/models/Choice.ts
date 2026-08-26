@@ -1,6 +1,6 @@
 export interface Choice {
-  id: number;
-  question_id: number;
-  text: string;
+  id: string;
+  question_id: string;
+  label: string;
   is_correct?: boolean;
 }

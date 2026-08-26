@@ -2,10 +2,10 @@ import * as QuestionRepository from '../repositories/QuestionRepository.js';
 import * as ResultRepository from '../repositories/ResultRepository.js';
 import type { SubmitExamDTO } from '../models/Result.js';
 
-export async function correctExam(userId: number, examId: number, submission: SubmitExamDTO): Promise<number> {
+export async function correctExam(studentId: string, examId: string, submission: SubmitExamDTO): Promise<number> {
   const questions = await QuestionRepository.findQuestionsWithAnswers(examId);
 
-  const submittedByQuestion = new Map<number, number>();
+  const submittedByQuestion = new Map<string, string>();
   for (const answer of submission.answers) {
     if (answer.choice_id !== null) {
       submittedByQuestion.set(answer.question_id, answer.choice_id);
@@ -27,7 +27,7 @@ export async function correctExam(userId: number, examId: number, submission: Su
     }
   }
 
-  await ResultRepository.saveAttempt(userId, examId, score);
+  await ResultRepository.saveAttempt(studentId, examId, score);
 
   return score;
 }

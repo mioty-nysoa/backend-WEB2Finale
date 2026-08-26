@@ -14,7 +14,7 @@ export async function createExam(dto: CreateExamDTO): Promise<Exam> {
   return exam;
 }
 
-export async function findExamById(id: number): Promise<Exam | null> {
+export async function findExamById(id: string): Promise<Exam | null> {
   const result = await pool.query<Exam>(
     'SELECT * FROM exams WHERE id = $1',
     [id]
