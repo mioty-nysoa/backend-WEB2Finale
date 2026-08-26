@@ -1,0 +1,23 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: examhub_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: examhub
+      POSTGRES_PASSWORD: examhub_password
+      POSTGRES_DB: examhub
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/1-schema.sql
+      - ./database/insert_admin.sql:/docker-entrypoint-initdb.d/2-insert-admin.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U examhub"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
