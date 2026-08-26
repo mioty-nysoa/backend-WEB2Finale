@@ -2,6 +2,9 @@ import express from "express";
 import dotenv from "dotenv";
 import authRoutes from "./routes/auth.routes";
 import userRoutes from "./routes/user.routes";
+import { courseRouter } from "./controllers/CourseController";
+import { examRouter } from "./controllers/ExamController";
+import { studentExamRouter } from "./controllers/StudentExamController";
 import { errorHandler } from "./middlewares/errorHandler";
 import swaggerUi from "swagger-ui-express";
 import { parse } from "yaml";
@@ -15,6 +18,9 @@ app.use(express.json());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/students", userRoutes);
+app.use("/api", courseRouter);
+app.use("/api", examRouter);
+app.use("/api", studentExamRouter);
 
 app.use(errorHandler);
 
