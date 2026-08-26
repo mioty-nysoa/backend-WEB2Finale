@@ -3,6 +3,10 @@ import dotenv from "dotenv";
 import authRoutes from "./routes/auth.routes";
 import userRoutes from "./routes/user.routes";
 import { errorHandler } from "./middlewares/errorHandler";
+import swaggerUi from "swagger-ui-express";
+import { parse } from "yaml";
+import fs from "fs";
+import path from "path";
 
 dotenv.config();
 
@@ -16,3 +20,9 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+const swaggerDocument = parse(
+  fs.readFileSync(path.join(__dirname, "../swagger.yaml"), "utf8")
+);
+
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
