@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import fs from "fs";
 import path from "path";
+import cors from "cors";
 import swaggerUi from "swagger-ui-express";
 import { parse } from "yaml";
 
@@ -16,6 +17,11 @@ dotenv.config();
 
 const app = express();
 const port = Number(process.env.PORT) || 3000;
+
+app.use(cors({
+  origin: "https://localhost:5173",
+  credentials: true
+}));
 
 app.use(express.json());
 

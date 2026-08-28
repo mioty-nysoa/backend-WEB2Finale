@@ -17,7 +17,6 @@ export async function correctExam(studentId: string, examId: string, submission:
   for (const question of questions) {
     const correctChoice = (question.choices ?? []).find((choice) => choice.is_correct);
     if (!correctChoice) {
-      // Question mal configurée (aucun choix marqué correct) : on ne peut pas la noter, on l'ignore
       continue;
     }
 
