@@ -1,8 +1,6 @@
-import { pool } from '../config/db.js';
-import type { Attempt } from '../models/Result.js';
+import { pool } from "../config/db";
+import type { Attempt } from "../models/Result";
 
-// Hypothèse : une table "attempts" avec les colonnes id, user_id, exam_id, score, submitted_at.
-// Si le nom réel de la table/des colonnes diffère chez toi, dis-le moi et j'ajuste les requêtes.
 
 export async function saveAttempt(studentId: string, examId: string, score: number): Promise<Attempt> {
   const result = await pool.query<Attempt>(
@@ -28,6 +26,14 @@ export async function findAttemptsByUser(studentId: string): Promise<Attempt[]> 
 export async function findAllResults(): Promise<Attempt[]> {
   const result = await pool.query<Attempt>(
     'SELECT * FROM attempts ORDER BY submitted_at DESC'
+  );
+  return result.rows;
+}
+
+export async function findResultsByExamId(examId: string): Promise<Attempt[]> {
+  const result = await pool.query<Attempt>(
+    "SELECT * FROM attempts WHERE exam_id = $1 ORDER BY score DESC, submitted_at ASC",
+    [examId]
   );
   return result.rows;
 }

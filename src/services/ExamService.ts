@@ -1,8 +1,8 @@
-import * as ExamRepository from '../repositories/ExamRepository.js';
-import * as QuestionRepository from '../repositories/QuestionRepository.js';
-import type { Exam, CreateExamDTO } from '../models/Exam.js';
-import type { Question } from '../models/Question.js';
-import type { Choice } from '../models/Choice.js';
+import * as ExamRepository from '../repositories/ExamRepository';
+import * as QuestionRepository from '../repositories/QuestionRepository';
+import type { Exam, CreateExamDTO } from '../models/Exam';
+import type { Question } from '../models/Question';
+import type { Choice } from '../models/Choice';
 
 export class InvalidExamDatesError extends Error {
   constructor() {

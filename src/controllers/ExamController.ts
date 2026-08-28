@@ -1,9 +1,7 @@
-import { Router } from 'express';
-import * as ExamService from '../services/ExamService.js';
+import { Request, Response } from "express";
+import * as ExamService from "../services/ExamService";
 
-export const examRouter = Router();
-
-examRouter.post('/admin/exams', async (request, response) => {
+export async function create(request: Request, response: Response) {
   try {
     const { course_id, title, description, start_date, end_date } = request.body;
     const exam = await ExamService.createExam({ course_id, title, description, start_date, end_date });
@@ -14,13 +12,13 @@ examRouter.post('/admin/exams', async (request, response) => {
       return;
     }
     console.error(error);
-    response.status(500).json({ message: 'Erreur interne du serveur' });
+    response.status(500).json({ message: "Internal server error" });
   }
-});
+}
 
-examRouter.post('/admin/exams/:id/questions', async (request, response) => {
+export async function addQuestion(request: Request, response: Response) {
   try {
-    const examId = request.params.id;
+    const examId = request.params.id as string;
     const { statement, points, choices } = request.body;
     const question = await ExamService.addQuestionToExam(examId, statement, points, choices);
     response.status(201).json(question);
@@ -30,6 +28,6 @@ examRouter.post('/admin/exams/:id/questions', async (request, response) => {
       return;
     }
     console.error(error);
-    response.status(500).json({ message: 'Erreur interne du serveur' });
+    response.status(500).json({ message: "Internal server error" });
   }
-});
+}

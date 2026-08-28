@@ -1,9 +1,7 @@
-import { Router } from 'express';
-import * as CourseService from '../services/CourseService.js';
+import { Request, Response } from "express";
+import * as CourseService from "../services/CourseService";
 
-export const courseRouter = Router();
-
-courseRouter.post('/admin/courses', async (request, response) => {
+export async function create(request: Request, response: Response) {
   try {
     const { code, name, description } = request.body;
     const course = await CourseService.createCourse({ code, name, description });
@@ -14,16 +12,16 @@ courseRouter.post('/admin/courses', async (request, response) => {
       return;
     }
     console.error(error);
-    response.status(500).json({ message: 'Erreur interne du serveur' });
+    response.status(500).json({ message: "Internal server error" });
   }
-});
+}
 
-courseRouter.get('/admin/courses', async (_request, response) => {
+export async function list(_request: Request, response: Response) {
   try {
     const courses = await CourseService.listCourses();
     response.status(200).json(courses);
   } catch (error) {
     console.error(error);
-    response.status(500).json({ message: 'Erreur interne du serveur' });
+    response.status(500).json({ message: "Internal server error" });
   }
-});
+}

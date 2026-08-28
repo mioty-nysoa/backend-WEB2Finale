@@ -1,5 +1,5 @@
-import * as CourseRepository from '../repositories/CourseRepository.js';
-import type { Course, CreateCourseDTO } from '../models/Course.js';
+import * as CourseRepository from '../repositories/CourseRepository';
+import type { Course, CreateCourseDTO } from '../models/Course';
 
 export class CourseCodeAlreadyExistsError extends Error {
   constructor(code: string) {

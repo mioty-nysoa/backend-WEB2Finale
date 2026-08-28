@@ -1,6 +1,6 @@
-import { pool } from '../config/db.js';
-import type { Question } from '../models/Question.js';
-import type { Choice } from '../models/Choice.js';
+import { pool } from '../config/db';
+import type { Question } from '../models/Question';
+import type { Choice } from '../models/Choice';
 
 export async function createQuestion(examId: string, statement: string, points: number): Promise<Question> {
   const result = await pool.query<Question>(

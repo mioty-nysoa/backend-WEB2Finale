@@ -1,5 +1,5 @@
-import { pool } from '../config/db.js';
-import type { Course, CreateCourseDTO } from '../models/Course.js';
+import { pool } from '../config/db';
+import type { Course, CreateCourseDTO } from '../models/Course';
 
 
 export async function createCourse(dto: CreateCourseDTO): Promise<Course> {

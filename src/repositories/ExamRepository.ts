@@ -1,5 +1,5 @@
-import { pool } from '../config/db.js';
-import type { Exam, CreateExamDTO } from '../models/Exam.js';
+import { pool } from '../config/db';
+import type { Exam, CreateExamDTO } from '../models/Exam';
 
 export async function createExam(dto: CreateExamDTO): Promise<Exam> {
   const result = await pool.query<Exam>(

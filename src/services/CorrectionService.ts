@@ -1,6 +1,6 @@
-import * as QuestionRepository from '../repositories/QuestionRepository.js';
-import * as ResultRepository from '../repositories/ResultRepository.js';
-import type { SubmitExamDTO } from '../models/Result.js';
+import * as QuestionRepository from '../repositories/QuestionRepository';
+import * as ResultRepository from '../repositories/ResultRepository';
+import type { SubmitExamDTO } from '../models/Result';
 
 export async function correctExam(studentId: string, examId: string, submission: SubmitExamDTO): Promise<number> {
   const questions = await QuestionRepository.findQuestionsWithAnswers(examId);
