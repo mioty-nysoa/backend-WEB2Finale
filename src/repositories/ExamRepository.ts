@@ -28,3 +28,74 @@ export async function findAvailableExams(): Promise<Exam[]> {
   );
   return result.rows;
 }
+export async function getAllExams(): Promise<Exam[]> {
+   const result = await pool.query('SELECT * FROM exams ORDER BY created_at DESC');
+  return result.rows;
+}
+export async function findQuestionsByExamId(examId: string) {
+  const query = `
+    SELECT q.id, q.statement AS text, 
+           json_agg(json_build_object('id', c.id, 'text', c.label, 'is_correct', c.is_correct)) AS choices
+    FROM questions q
+    LEFT JOIN choices c ON q.id = c.question_id
+    WHERE q.exam_id = $1
+    GROUP BY q.id;
+  `;
+  const result = await pool.query(query, [examId]);
+  return result.rows;
+}
+
+export async function addQuestionToExam(
+  examId: string, 
+  questionText: string, 
+  choices: Array<{ text: string; is_correct: boolean }>
+) {
+  const client = await pool.connect();
+
+  try {
+    await client.query('BEGIN');
+
+    const questionRes = await client.query(
+      'INSERT INTO questions (exam_id, statement) VALUES ($1, $2) RETURNING id, statement',
+      [examId, questionText]
+    );
+    const question = questionRes.rows[0];
+
+    const insertedChoices = [];
+    for (const choice of choices) {
+      const choiceRes = await client.query(
+        'INSERT INTO choices (question_id, label, is_correct) VALUES ($1, $2, $3) RETURNING id, label AS text, is_correct',
+        [question.id, choice.text, choice.is_correct]
+      );
+      insertedChoices.push(choiceRes.rows[0]);
+    }
+
+    await client.query('COMMIT');
+    return { ...question, choices: insertedChoices };
+  } catch (error) {
+    await client.query('ROLLBACK');
+    throw error;
+  } finally {
+    client.release();
+  }
+}
+export async function deleteQuestion(questionId: string) {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+
+    // 1. Supprimer d'abord les choix liés
+    await client.query('DELETE FROM choices WHERE question_id = $1', [questionId]);
+
+    // 2. Supprimer la question
+    const result = await client.query('DELETE FROM questions WHERE id = $1 RETURNING id', [questionId]);
+
+    await client.query('COMMIT');
+    return (result.rowCount??0) > 0;
+  } catch (error) {
+    await client.query('ROLLBACK');
+    throw error;
+  } finally {
+    client.release();
+  }
+}

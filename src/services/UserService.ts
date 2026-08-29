@@ -17,15 +17,15 @@ function toSafeUser(user: User): SafeUser {
 export class UserService {
   private userRepository = new UserRepository();
 
-  // ---- AUTH ----
   async login(email: string, password: string): Promise<{ token: string; user: SafeUser }> {
+    console.log("--> EMAIL REÇU :", email);
+    console.log("--> PASSWORD REÇU :", password);
     const user = await this.userRepository.findByEmail(email);
-
+    console.log("--> USER BDD :", user);
     if (!user) {
       throw new ApiError(401, "Invalid credentials");
     }
 
-    // RG-11: distinct message for a deactivated account
     if (!user.is_active) {
       throw new ApiError(401, "This account has been deactivated");
     }
@@ -44,8 +44,7 @@ export class UserService {
     return { token, user: toSafeUser(user) };
   }
 
-  // ---- STUDENT MANAGEMENT (admin) ----
-  async listStudents(): Promise<SafeUser[]> {
+   async listStudents(): Promise<SafeUser[]> {
     const students = await this.userRepository.findAllStudents();
     return students.map(toSafeUser);
   }
@@ -71,7 +70,10 @@ export class UserService {
       throw new ApiError(404, "Student not found");
     }
 
-    const updated = await this.userRepository.updateProfile(id, name, email);
+    const updatedName = name || existing.name;
+  const updatedEmail = email || existing.email;
+
+    const updated = await this.userRepository.updateProfile(id, updatedName, updatedEmail);
     if (!updated) {
       throw new ApiError(404, "Student not found");
     }
@@ -92,8 +94,7 @@ export class UserService {
     await this.userRepository.updatePassword(id, passwordHash);
   }
 
-  // RG-10: DELETE /api/students/:id => deactivation, never physical deletion
-  async deactivateStudent(id: string): Promise<SafeUser> {
+  async desactivateStudent(id: string): Promise<SafeUser> {
     const existing = await this.userRepository.findById(id);
     if (!existing || existing.role !== "STUDENT") {
       throw new ApiError(404, "Student not found");

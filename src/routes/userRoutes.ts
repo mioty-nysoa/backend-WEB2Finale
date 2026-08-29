@@ -13,6 +13,6 @@ router.post("/", (req, res, next) => controller.create(req, res, next));
 router.put("/:id", (req, res, next) => controller.update(req, res, next));
 router.put("/:id/reset-password", (req, res, next) => controller.resetPassword(req, res, next));
 router.put("/:id/reactivate", (req, res, next) => controller.reactivate(req, res, next));
-router.delete("/:id", (req, res, next) => controller.deactivate(req, res, next));
+router.delete("/:id", (req, res, next) => controller.desactivate(req, res, next));
 
 export default router;

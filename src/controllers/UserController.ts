@@ -35,20 +35,22 @@ export class UserController {
   }
 
   async resetPassword(req: Request, res: Response, next: NextFunction) {
-    const id = req.params.id as string;
-    const { newPassword } = req.body;
+    
     try {
+      const id= req.params.id as string;
+      const newPassword  = req.body?.newPassword || req.body.password;
+
       await userService.resetPassword(id, newPassword);
-      return res.status(200).json({ message: "Password reset successfully" });
+      return res.status(200).json({ message: "Mot de passe réinitialisé avec succè" });
     } catch (err) {
       return next(err);
     }
   }
 
-  async deactivate(req: Request, res: Response, next: NextFunction) {
+  async desactivate(req: Request, res: Response, next: NextFunction) {
     const id = req.params.id as string;
     try {
-      const student = await userService.deactivateStudent(id);
+      const student = await userService.desactivateStudent(id);
       return res.status(200).json(student);
     } catch (err) {
       return next(err);

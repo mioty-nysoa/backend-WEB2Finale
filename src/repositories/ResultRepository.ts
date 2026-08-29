@@ -15,13 +15,30 @@ export async function saveAttempt(studentId: string, examId: string, score: numb
   return attempt;
 }
 
-export async function findAttemptsByUser(studentId: string): Promise<Attempt[]> {
-  const result = await pool.query<Attempt>(
-    'SELECT * FROM attempts WHERE student_id = $1 ORDER BY submitted_at DESC',
-    [studentId]
-  );
+export const findAttemptsByUser = async (studentId: string): Promise<any[]> => {
+  const query = `
+    SELECT 
+      a.id,
+      a.student_id,
+      a.exam_id,
+      a.score,
+      a.submitted_at,
+      a.submitted_at AS "submittedAt",
+      e.title AS exam_title,
+      e.title AS "examTitle",
+      COALESCE(
+        (SELECT CAST(COUNT(*) AS integer) FROM questions q WHERE q.exam_id = a.exam_id),
+        20
+      ) AS "totalQuestions"
+      FROM attempts a
+    LEFT JOIN exams e ON a.exam_id = e.id
+    WHERE a.student_id = $1
+    ORDER BY a.submitted_at DESC
+  `;
+
+  const result = await pool.query(query, [studentId]);
   return result.rows;
-}
+};
 
 export async function findAllResults(): Promise<Attempt[]> {
   const result = await pool.query<Attempt>(
